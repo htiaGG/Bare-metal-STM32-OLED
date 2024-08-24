@@ -28,3 +28,12 @@ void _reset(void)
     main();
     while(1);   //NOTE: In case main returns
 }
+
+extern void _estack(void); // Defined in link.ld
+
+__attribute__((section(".vectors")))
+void (* const InterruptVectorTable[])(void) =
+{
+    _estack,
+    _reset,
+};
