@@ -23,10 +23,11 @@ void _reset(void)
     for (dst = &_bss_start; dst < &_bss_end; dst++)
     {
         *dst = 0;
-
     }
+
     main();
-    while(1);   //NOTE: In case main returns
+
+    while(1);
 }
 
 extern void _estack(void); // Defined in link.ld
