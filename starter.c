@@ -30,11 +30,8 @@ void _reset(void)
     while(1);
 }
 
-extern void _estack(void); // Defined in link.ld
+extern void SysTick_Handler(void);  // Defined in main.c
+extern void _estack(void);          // Defined in link.ld
 
 __attribute__((section(".vectors")))
-void (* const InterruptVectorTable[])(void) =
-{
-    _estack,
-    _reset,
-};
+void (*const tab[16 + 91])(void) = {_estack, _reset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SysTick_Handler};
