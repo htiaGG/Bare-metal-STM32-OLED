@@ -1,7 +1,7 @@
 ECHO OFF
 CLS
 
-rmdir .\bin
+rmdir /s /q .\bin
 mkdir .\bin
 
 REM Compiling
@@ -18,6 +18,6 @@ arm-none-eabi-objdump -D -h bin\main.o > bin\main.list
 arm-none-eabi-objdump -D -h bin\prog.elf > bin\prog.list
 arm-none-eabi-nm --numeric-sort bin\prog.elf
 
-st-flash write %WorkingDir%bin\prog.bin 0x08000000
+@REM st-flash write %WorkingDir%bin\prog.bin 0x08000000
 
 pause
