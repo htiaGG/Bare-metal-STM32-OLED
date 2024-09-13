@@ -62,8 +62,24 @@ struct rcc
     volatile uint32_t RESERVED15;  //0x88
     volatile uint32_t DCKCFGR;     //0x8C
 };
-
 #define RCC ((struct rcc *) 0x40023800) // RCC peripheral
+
+struct i2c
+{
+    volatile uint32_t CR1;
+    volatile uint32_t CR2;
+    volatile uint32_t OAR1;
+    volatile uint32_t OAR2;
+    volatile uint32_t DR;
+    volatile uint32_t SR1;
+    volatile uint32_t SR2;
+    volatile uint32_t CCR;
+    volatile uint32_t TRISE;
+    volatile uint32_t FLTR;
+};
+#define I2C1 ((struct i2c *) 0x40005400)  //I2C1
+#define I2C2 ((struct i2c *) 0x40005800)  //I2C1
+#define I2C3 ((struct i2c *) 0x40005C00)  //I2C1
 
 struct systick
 {
@@ -114,4 +130,43 @@ void gpio_set_mode(uint16_t pin, uint8_t mode)
 static inline void gpio_write(uint16_t pin, bool val) {
   struct gpio *gpio = GPIO(PINBANK(pin));
   gpio->BSRR = (1U << PINNO(pin)) << (val ? 0 : 16);
+}
+
+// I2C Functions
+enum I2C_RW_Bit {
+  RW_Write = 0,
+  RW_Read = 1,
+};
+
+void I2C_Start(struct i2c *I2C)
+{
+    I2C->CR1 |= (1 << 10);
+    I2C->CR1 |= (1 << 8);
+    while(!(I2C->SR1 & (1 << 0)));
+}
+
+void I2C_Write(struct i2c *I2C, uint8_t data)
+{
+    while(!(I2C->SR1 & (1 << 7)));
+    I2C->DR = data;
+    while(!(I2C->SR1 & (1 << 2)));
+}
+
+
+void I2C_Address(struct i2c *I2C, uint8_t address, enum I2C_RW_Bit mode)
+{
+    I2C->DR = ((address << 1) | (uint8_t)mode);
+    while(!(I2C->SR1 & (1 << 1)));
+    uint8_t temp = I2C->SR1 | I2C->SR2; // Clears the ADDR bit by reading SR1 followed by SR2
+}
+
+void I2C_Stop(struct i2c *I2C)
+{
+    I2C->CR1 |= (1 << 9);
+}
+
+void I2C_Begin(struct i2c *I2C, uint8_t address, enum I2C_RW_Bit mode)
+{
+    I2C_Start(I2C);
+    I2C_Address(I2C, address, mode);
 }
