@@ -77,9 +77,9 @@ struct i2c
     volatile uint32_t TRISE;
     volatile uint32_t FLTR;
 };
-#define I2C1 ((struct i2c *) 0x40005400)  //I2C1
-#define I2C2 ((struct i2c *) 0x40005800)  //I2C1
-#define I2C3 ((struct i2c *) 0x40005C00)  //I2C1
+#define I2C1 ((struct i2c *) 0x40005400)
+#define I2C2 ((struct i2c *) 0x40005800)
+#define I2C3 ((struct i2c *) 0x40005C00)
 
 struct systick
 {

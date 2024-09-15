@@ -54,9 +54,14 @@ int main()
 
     i2c1->CR1 |= (1 << 0); // Enable I2C
 
+    /* TEMP: Testing Display (Successful) */
     SSD1306_Init(i2c1);
+    SSD1306_Draw_Pixel(5, 5);
+    SSD1306_Update_Display();
 
     uint32_t timer = 0, period = 1000;
+
+    /* TEMP: Testing timing + board LED (Successful)*/
 	for(;;)
     {
         bool on;
@@ -64,15 +69,6 @@ int main()
             // static bool on;
             gpio_write(led, on);
             on = !on;
-            SSD1306_Clear_Display(i2c1);
-        }
-        if (on)
-        {
-            uint8_t page_buffer[128 * 8];
-            memset(page_buffer, 0xFF, sizeof(page_buffer));
-            SSD1306_Set_Column_Address(i2c1, 0, 63);
-            SSD1306_Set_Page_Address(i2c1, 0, 3);
-            SSD1306_Send_Buffer(i2c1, page_buffer, sizeof(page_buffer));
         }
     }
 	return 0;
