@@ -18,4 +18,4 @@ git clone https://github.com/htiaGG/stm32-game-loader-SSD1306.git
 cd stm32-game-loader-SSD1306
 .\build.bat
 ```
-Currently the batch file builds and flashes the MCU, so make sure the board is connected (through STLINK).
+Currently the batch file builds and flashes (enable in build.bat) the MCU, so make sure the board is connected (through STLINK).
