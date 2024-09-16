@@ -11,10 +11,10 @@ static struct i2c *I2C = I2C1;
 #define SSD1306_NUM_PAGES 4
 #define SSD1306_NUM_ROWS_PER_PAGE 8
 
-
-
-typedef uint8_t PageBuffer[SSD1306_NUM_COLUMNS];
-typedef PageBuffer FrameBuffer[SSD1306_NUM_PAGES];
+typedef enum {
+    Black = 0x00,
+    White = 0x01,
+} SSD1306_SCREEN_COLOR;
 
 static uint8_t SSD1306_Screen_Buffer[SSD1306_NUM_PAGES * SSD1306_NUM_COLUMNS];
 
@@ -53,6 +53,8 @@ void SSD1306_Send_Command(uint8_t address, uint8_t cmd)
 
 // Initialize SSD1306 display with a sequence of commands
 void SSD1306_Init() {
+    HAL_delay(100);
+
     SSD1306_Send_Command(SSD1306_I2C_ADDR, SSD1306_DISPLAY_OFF);             // Display off
 
     SSD1306_Send_Command(SSD1306_I2C_ADDR, SSD1306_SET_DISPLAY_CLOCK);       // Set display clock
@@ -91,7 +93,8 @@ void SSD1306_Init() {
     SSD1306_Send_Command(SSD1306_I2C_ADDR, SSD1306_NORMAL_DISPLAY);          // Set normal display mode
     SSD1306_Send_Command(SSD1306_I2C_ADDR, SSD1306_DISPLAY_ON);              // Display on
 
-    SSD1306_Clear_Display();
+    SSD1306_Fill(Black);
+    SSD1306_Update_Display();
 }
 
 void SSD1306_Send_Buffer(const uint8_t* buffer, unsigned long length)
@@ -119,16 +122,19 @@ void SSD1306_Set_Page_Address(uint8_t start, uint8_t end)
     SSD1306_Send_Command(SSD1306_I2C_ADDR, end);
 }
 
-void SSD1306_Clear_Display()
+void SSD1306_Fill(SSD1306_SCREEN_COLOR color)
 {
-    uint8_t page_buffer[128 * 8];
-    memset(page_buffer, 0x00, sizeof(page_buffer));
+    for (int i = 0; i < sizeof(SSD1306_Screen_Buffer); i++)
+    {
+        SSD1306_Screen_Buffer[i] = (color == Black) ? 0x00 : 0xFF;
+    }
+
     SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
     SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
-    SSD1306_Send_Buffer(page_buffer, sizeof(page_buffer));
+    SSD1306_Send_Buffer(SSD1306_Screen_Buffer, sizeof(SSD1306_Screen_Buffer));
 }
 
-void SSD1306_Draw_Pixel(uint32_t x, uint32_t y)
+void SSD1306_Draw_Pixel(uint32_t x, uint32_t y, uint8_t value)
 {
     /* NOTE: Only upper bounds checking as coordinates are unsigned */
     if ((x > SSD1306_NUM_COLUMNS - 1) || (y > (SSD1306_NUM_PAGES * SSD1306_NUM_ROWS_PER_PAGE)))
@@ -141,7 +147,12 @@ void SSD1306_Draw_Pixel(uint32_t x, uint32_t y)
     uint8_t bit = y % SSD1306_NUM_ROWS_PER_PAGE;
     uint16_t index = x + (page * SSD1306_WIDTH);
 
-    SSD1306_Screen_Buffer[index] |= (1 << bit);
+    if (value)
+    {
+        SSD1306_Screen_Buffer[index] |= (1 << bit);
+    } else {
+        SSD1306_Screen_Buffer[index] &= ~(1 << bit);
+    }
 }
 
 void SSD1306_Update_Display()

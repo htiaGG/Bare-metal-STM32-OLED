@@ -3,7 +3,6 @@
 #include "Drivers/hal.h"
 #include "Drivers/ssd1306.h"
 
-volatile uint32_t s_ticks;
 void SysTick_Handler(void)
 {
     s_ticks++;
@@ -56,20 +55,58 @@ int main()
 
     /* TEMP: Testing Display (Successful) */
     SSD1306_Init(i2c1);
-    SSD1306_Draw_Pixel(5, 5);
+    // SSD1306_Draw_Pixel(5, 5);
     SSD1306_Update_Display();
 
-    uint32_t timer = 0, period = 1000;
+    uint32_t timer = 0, period = 100;
+    uint32_t frame = 0;
+
+    int x = 0, y = 0;
+    int dx = 1, dy = 1;
 
     /* TEMP: Testing timing + board LED (Successful)*/
 	for(;;)
     {
-        bool on;
-        if (timer_expired(&timer, period, s_ticks)) {
-            // static bool on;
-            gpio_write(led, on);
-            on = !on;
-        }
+        // bool on;
+        // gpio_write(led, on);
+        // on = !on;
+
+        // SSD1306_Fill(Black);
+        drawSquare(x, y);
+        SSD1306_Update_Display();
+        x += dx;
+        y += dy;
+
+        // Bounce off the edges
+        if (x <= 0 || x >= SSD1306_WIDTH - 4) dx = -dx;
+        if (y <= 0 || y >= SSD1306_HEIGHT - 4) dy = -dy;
+
+        // HAL_delay(100);
     }
 	return 0;
+}
+
+void createWavePattern(int frame) {
+    // SSD1306_Clear_Display();
+    for (int x = 0; x < SSD1306_WIDTH; x++) {
+        int y = (SSD1306_HEIGHT / 2) + (SSD1306_HEIGHT / 4) * ((x + frame) % SSD1306_WIDTH) / SSD1306_WIDTH;
+        SSD1306_Draw_Pixel(x, y, 1);
+    }
+}
+
+void createGradient() {
+    for (int y = 0; y < SSD1306_HEIGHT; y++) {
+        for (int x = 0; x < SSD1306_WIDTH; x++) {
+            // Create a gradient by setting pixels based on their position
+            SSD1306_Draw_Pixel(x, y, x % 2);
+        }
+    }
+}
+
+void drawSquare(int x, int y) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            SSD1306_Draw_Pixel(x + i, y + j, 1);
+        }
+    }
 }

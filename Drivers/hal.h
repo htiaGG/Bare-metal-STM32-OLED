@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+volatile uint32_t s_ticks;
+
 struct gpio
 {
     volatile uint32_t MODER;
@@ -108,6 +110,12 @@ bool timer_expired(uint32_t *t, uint32_t prd, uint32_t now) {
     if (*t > now) return false;                    // Not expired yet, return
     *t = (now - *t) > prd ? now + prd : *t + prd;  // Next expiration time
     return true;                                   // Expired, return true
+}
+void HAL_delay(uint32_t delay)
+{
+    uint32_t now = s_ticks;
+
+    while((s_ticks - now) < delay) {}
 }
 
 void systick_init(uint32_t ticks)
