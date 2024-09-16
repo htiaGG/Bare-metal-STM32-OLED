@@ -153,11 +153,22 @@ void I2C_Start(struct i2c *I2C)
     while(!(I2C->SR1 & (1 << 0)));
 }
 
-void I2C_Write(struct i2c *I2C, uint8_t data)
+void I2C_Write(struct i2c *I2C, uint16_t Addr, uint16_t MemAddress, uint8_t *data, uint16_t size)
 {
+    //TODO : COMPLETE THIS FUNCTION
+    I2C_Begin(I2C, Addr, RW_Write);
     while(!(I2C->SR1 & (1 << 7)));
-    I2C->DR = data;
+    I2C->DR = MemAddress;
     while(!(I2C->SR1 & (1 << 2)));
+
+    for(uint16_t i = 0; i < size; i++)
+    {
+        while(!(I2C->SR1 & (1 << 7)));
+        I2C->DR = data[i];
+    }
+    while(!(I2C->SR1 & (1 << 2)));
+
+    I2C_Stop(I2C);
 }
 
 

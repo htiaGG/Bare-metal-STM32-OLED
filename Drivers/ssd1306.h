@@ -45,11 +45,12 @@ static uint8_t SSD1306_Screen_Buffer[SSD1306_NUM_PAGES * SSD1306_NUM_COLUMNS];
 
 void SSD1306_Send_Command(uint8_t address, uint8_t cmd)
 {
-    I2C_Begin(I2C, address, RW_Write);
-    I2C_Write(I2C, CONTROL_COMMAND);
-    I2C_Write(I2C, cmd);
-    I2C_Stop(I2C);
+    // I2C_Begin(I2C, address, RW_Write);
+    // I2C_Write(I2C, CONTROL_COMMAND, 1);
+    I2C_Write(I2C, address, CONTROL_COMMAND, &cmd, 1);
+    // I2C_Stop(I2C);
 }
+
 
 // Initialize SSD1306 display with a sequence of commands
 void SSD1306_Init() {
@@ -97,15 +98,17 @@ void SSD1306_Init() {
     SSD1306_Update_Display();
 }
 
-void SSD1306_Send_Buffer(const uint8_t* buffer, unsigned long length)
+void SSD1306_Send_Data(const uint8_t* buffer, unsigned long length)
 {
-    I2C_Begin(I2C, SSD1306_I2C_ADDR, RW_Write);
-    I2C_Write(I2C, CONTROL_DATA);
+    // I2C_Begin(I2C, SSD1306_I2C_ADDR, RW_Write);
+    // I2C_Write(I2C, CONTROL_DATA);
     for (uint32_t i = 0u; i < length; ++i)
     {
-        I2C_Write(I2C, (buffer[i]));
+        SSD1306_Send_Command(SSD1306_I2C_ADDR, 0xB0 + i);
+        SSD1306_Send_Command(SSD1306_I2C_ADDR, 0x00);
+        SSD1306_Send_Command(SSD1306_I2C_ADDR, 0x10);
+        I2C_Write(I2C, SSD1306_I2C_ADDR, CONTROL_DATA, &buffer[SSD1306_WIDTH * i], SSD1306_WIDTH);
     }
-    I2C_Stop(I2C);
 }
 
 void SSD1306_Set_Column_Address(uint8_t start, uint8_t end)
@@ -129,9 +132,9 @@ void SSD1306_Fill(SSD1306_SCREEN_COLOR color)
         SSD1306_Screen_Buffer[i] = (color == Black) ? 0x00 : 0xFF;
     }
 
-    SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
-    SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
-    SSD1306_Send_Buffer(SSD1306_Screen_Buffer, sizeof(SSD1306_Screen_Buffer));
+    // SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
+    // SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
+    // SSD1306_Send_Data(SSD1306_Screen_Buffer, sizeof(SSD1306_Screen_Buffer));
 }
 
 void SSD1306_Draw_Pixel(uint32_t x, uint32_t y, uint8_t value)
@@ -159,5 +162,5 @@ void SSD1306_Update_Display()
 {
     SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
     SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
-    SSD1306_Send_Buffer(SSD1306_Screen_Buffer, sizeof(SSD1306_Screen_Buffer));
+    SSD1306_Send_Data(SSD1306_Screen_Buffer, sizeof(8));
 }

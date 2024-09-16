@@ -55,8 +55,8 @@ int main()
 
     /* TEMP: Testing Display (Successful) */
     SSD1306_Init(i2c1);
-    // SSD1306_Draw_Pixel(5, 5);
-    SSD1306_Update_Display();
+    // SSD1306_Draw_Pixel(5, 5, White);
+    // SSD1306_Update_Display();
 
     uint32_t timer = 0, period = 100;
     uint32_t frame = 0;
