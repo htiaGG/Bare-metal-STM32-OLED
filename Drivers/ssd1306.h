@@ -45,16 +45,13 @@ static uint8_t SSD1306_Screen_Buffer[SSD1306_NUM_PAGES * SSD1306_NUM_COLUMNS];
 
 void SSD1306_Send_Command(uint8_t address, uint8_t cmd)
 {
-    // I2C_Begin(I2C, address, RW_Write);
-    // I2C_Write(I2C, CONTROL_COMMAND, 1);
     I2C_Write(I2C, address, CONTROL_COMMAND, &cmd, 1);
-    // I2C_Stop(I2C);
 }
 
 
 // Initialize SSD1306 display with a sequence of commands
 void SSD1306_Init() {
-    HAL_delay(100);
+    HAL_Delay(100);
 
     SSD1306_Send_Command(SSD1306_I2C_ADDR, SSD1306_DISPLAY_OFF);             // Display off
 
@@ -100,8 +97,6 @@ void SSD1306_Init() {
 
 void SSD1306_Send_Data(const uint8_t* buffer, unsigned long length)
 {
-    // I2C_Begin(I2C, SSD1306_I2C_ADDR, RW_Write);
-    // I2C_Write(I2C, CONTROL_DATA);
     for (uint32_t i = 0u; i < length; ++i)
     {
         SSD1306_Send_Command(SSD1306_I2C_ADDR, 0xB0 + i);
@@ -131,10 +126,6 @@ void SSD1306_Fill(SSD1306_SCREEN_COLOR color)
     {
         SSD1306_Screen_Buffer[i] = (color == Black) ? 0x00 : 0xFF;
     }
-
-    // SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
-    // SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
-    // SSD1306_Send_Data(SSD1306_Screen_Buffer, sizeof(SSD1306_Screen_Buffer));
 }
 
 void SSD1306_Draw_Pixel(uint32_t x, uint32_t y, uint8_t value)
@@ -160,7 +151,13 @@ void SSD1306_Draw_Pixel(uint32_t x, uint32_t y, uint8_t value)
 
 void SSD1306_Update_Display()
 {
-    SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
-    SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
+    // SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
+    // SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
     SSD1306_Send_Data(SSD1306_Screen_Buffer, sizeof(8));
+    // for(uint8_t i = 0; i < SSD1306_HEIGHT/8; i++) {
+    //     SSD1306_Send_Command(SSD1306_I2C_ADDR, 0xB0 + i); // Set the current RAM page address.
+    //     SSD1306_Send_Command(SSD1306_I2C_ADDR, 0x00);
+    //     SSD1306_Send_Command(SSD1306_I2C_ADDR, 0x10);
+    //     SSD1306_Send_Data(&SSD1306_Screen_Buffer[SSD1306_WIDTH*i],SSD1306_WIDTH);
+    // }
 }

@@ -18,7 +18,8 @@ void *memset(void *dest, int value, size_t len) {
 
 int main()
 {
-    systick_init(DEFAULT_CPU_CLOCK / 1000);
+    SystemClock_Config();
+    systick_init(MAX_CPU_CLOCK / 1000);
 
     RCC->AHB1ENR |= 1 << 0; // Enable GPIOA clock
     RCC->AHB1ENR |= 1 << 1; // Enable GPIOB clock
@@ -42,7 +43,7 @@ int main()
     gpiob->PUPDR |= (1 << 16) | (1 << 18);
     gpiob->AFR[1] |= (4 << 0) | (4 << 4);
 
-    //Configuring IC2 registers
+    //Configuring I2C registers
     struct i2c *i2c1 = I2C1;
     i2c1->CR1 |= (1 << 15);
     i2c1->CR1 &= ~(1 << 15);
@@ -53,10 +54,15 @@ int main()
 
     i2c1->CR1 |= (1 << 0); // Enable I2C
 
+    //Configure USART2
+    volatile uint16_t USART2_Tx = PIN('A', 2);
+    volatile uint16_t USART2_Rx = PIN('A', 3);
+    struct gpio *gpioa = GPIO(PINBANK(USART2_Tx));
+    RCC->APB1ENR |= 1 << 17;
+    gpioa->AFR[0] |= (7 << (PINNO(USART2_Tx) * 4)) | (7 << (PINNO(USART2_Rx) * 4));
+
     /* TEMP: Testing Display (Successful) */
     SSD1306_Init(i2c1);
-    // SSD1306_Draw_Pixel(5, 5, White);
-    // SSD1306_Update_Display();
 
     uint32_t timer = 0, period = 100;
     uint32_t frame = 0;
@@ -67,40 +73,30 @@ int main()
     /* TEMP: Testing timing + board LED (Successful)*/
 	for(;;)
     {
+        bool on;
+        if(on)
+        {
+            SSD1306_Fill(White);
+        } else {
+            SSD1306_Fill(Black);
+        }
+        SSD1306_Update_Display();
+        on = !on;
         // bool on;
         // gpio_write(led, on);
         // on = !on;
 
         // SSD1306_Fill(Black);
-        drawSquare(x, y);
-        SSD1306_Update_Display();
-        x += dx;
-        y += dy;
+        // drawSquare(x, y);
+        // SSD1306_Update_Display();
+        // x += dx * 2;
+        // y += dy * 2;
 
-        // Bounce off the edges
-        if (x <= 0 || x >= SSD1306_WIDTH - 4) dx = -dx;
-        if (y <= 0 || y >= SSD1306_HEIGHT - 4) dy = -dy;
-
-        // HAL_delay(100);
+        // // Bounce off the edges
+        // if (x <= 0 || x >= SSD1306_WIDTH - 4) dx = -dx;
+        // if (y <= 0 || y >= SSD1306_HEIGHT - 4) dy = -dy;
     }
 	return 0;
-}
-
-void createWavePattern(int frame) {
-    // SSD1306_Clear_Display();
-    for (int x = 0; x < SSD1306_WIDTH; x++) {
-        int y = (SSD1306_HEIGHT / 2) + (SSD1306_HEIGHT / 4) * ((x + frame) % SSD1306_WIDTH) / SSD1306_WIDTH;
-        SSD1306_Draw_Pixel(x, y, 1);
-    }
-}
-
-void createGradient() {
-    for (int y = 0; y < SSD1306_HEIGHT; y++) {
-        for (int x = 0; x < SSD1306_WIDTH; x++) {
-            // Create a gradient by setting pixels based on their position
-            SSD1306_Draw_Pixel(x, y, x % 2);
-        }
-    }
 }
 
 void drawSquare(int x, int y) {

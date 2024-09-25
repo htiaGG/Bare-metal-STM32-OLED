@@ -4,6 +4,7 @@ CLS
 rmdir /s /q .\bin
 mkdir .\bin
 
+
 REM Compiling
 arm-none-eabi-gcc -O0 -Wall -c -g -mcpu=cortex-m4 -mthumb main.c -o bin\main.o
 arm-none-eabi-gcc -O0 -Wall -c -g -mcpu=cortex-m4 -mthumb startup.c -o bin\.o
