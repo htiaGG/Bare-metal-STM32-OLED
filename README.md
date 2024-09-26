@@ -1,5 +1,7 @@
 # Bare-metal STM32 SSD1306 Driver (I2C)
 
+A custom bare-metal driver for the SSD1306 OLED display, interfaced via I2C with an STM32 microcontroller. Both the driver and the accompanying example program are written from scratch, without relying on any high-level libraries or HAL (Hardware Abstraction Layer).
+
 ### Hardware used:
 - MCU: [STM32F401RE](https://www.st.com/en/microcontrollers-microprocessors/stm32f401re.html)
 - Platform: [Nucleo-64 ](https://www.st.com/en/evaluation-tools/nucleo-f401re.html)
@@ -20,3 +22,6 @@ cd stm32-game-loader-SSD1306
 .\build.bat
 ```
 Currently the batch file builds and flashes (enable in build.bat) the MCU, so make sure the board is connected (through STLINK).
+
+### Demo
+![Demo](repo_images/demo.gif)
