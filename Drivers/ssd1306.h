@@ -1,3 +1,4 @@
+#pragma once
 #include "hal.h"
 
 static struct i2c *I2C = I2C1;
@@ -151,13 +152,5 @@ void SSD1306_Draw_Pixel(uint32_t x, uint32_t y, uint8_t value)
 
 void SSD1306_Update_Display()
 {
-    // SSD1306_Set_Column_Address(0, SSD1306_NUM_COLUMNS - 1);
-    // SSD1306_Set_Page_Address(0, SSD1306_NUM_PAGES - 1);
     SSD1306_Send_Data(SSD1306_Screen_Buffer, sizeof(8));
-    // for(uint8_t i = 0; i < SSD1306_HEIGHT/8; i++) {
-    //     SSD1306_Send_Command(SSD1306_I2C_ADDR, 0xB0 + i); // Set the current RAM page address.
-    //     SSD1306_Send_Command(SSD1306_I2C_ADDR, 0x00);
-    //     SSD1306_Send_Command(SSD1306_I2C_ADDR, 0x10);
-    //     SSD1306_Send_Data(&SSD1306_Screen_Buffer[SSD1306_WIDTH*i],SSD1306_WIDTH);
-    // }
 }

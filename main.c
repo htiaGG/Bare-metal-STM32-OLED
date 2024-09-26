@@ -73,28 +73,30 @@ int main()
     /* TEMP: Testing timing + board LED (Successful)*/
 	for(;;)
     {
-        bool on;
-        if(on)
-        {
-            SSD1306_Fill(White);
-        } else {
-            SSD1306_Fill(Black);
-        }
-        SSD1306_Update_Display();
-        on = !on;
         // bool on;
-        // gpio_write(led, on);
-        // on = !on;
-
-        // SSD1306_Fill(Black);
-        // drawSquare(x, y);
+        // if(on)
+        // {
+        //     SSD1306_Fill(White);
+        // } else {
+        //     SSD1306_Fill(Black);
+        // }
         // SSD1306_Update_Display();
-        // x += dx * 2;
-        // y += dy * 2;
+        // on = !on;
+        bool on;
+        gpio_write(led, on);
+        on = !on;
 
-        // // Bounce off the edges
-        // if (x <= 0 || x >= SSD1306_WIDTH - 4) dx = -dx;
-        // if (y <= 0 || y >= SSD1306_HEIGHT - 4) dy = -dy;
+        SSD1306_Fill(Black);
+        drawSquare(x, y);
+
+        SSD1306_Update_Display();
+
+        x += dx * 4;
+        y += dy * 4;
+
+        // Bounce off the edges
+        if (x <= 0 || x >= SSD1306_WIDTH - 4) dx = -dx;
+        if (y <= 0 || y >= SSD1306_HEIGHT - 4) dy = -dy;
     }
 	return 0;
 }
