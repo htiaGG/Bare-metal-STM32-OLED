@@ -3,6 +3,7 @@
 ### Hardware used:
 - MCU: [STM32F401RE](https://www.st.com/en/microcontrollers-microprocessors/stm32f401re.html)
 - Platform: [Nucleo-64 ](https://www.st.com/en/evaluation-tools/nucleo-f401re.html)
+- SSD1306 OLED Screen (128x32)
 
 (Note: memory layout is specific to stm32f401re MCU)
 
