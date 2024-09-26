@@ -1,4 +1,4 @@
-# Games on a STM32 & 132x32 OLED Screen
+# Bare-metal STM32 SSD1306 Driver (I2C)
 
 ### Hardware used:
 - MCU: [STM32F401RE](https://www.st.com/en/microcontrollers-microprocessors/stm32f401re.html)
